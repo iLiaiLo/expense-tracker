@@ -233,6 +233,6 @@ Ensure you set a strong `JWT_SECRET` in your environment variables for token gen
 
 ## Support
 
-For issues or questions, please open an issue in the repository or contact the development team.
+For issues or questions, please open an issue in the repository or contact me.
 
 

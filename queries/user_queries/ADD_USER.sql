@@ -1,0 +1,1 @@
+INSERT INTO expense_tracker.users (id,username,email,password) VALUES($1,$2,$3,$4);

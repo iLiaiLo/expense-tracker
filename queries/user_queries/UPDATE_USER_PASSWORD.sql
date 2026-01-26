@@ -1,0 +1,1 @@
+UPDATE expense_tracker.users SET password=$1,reset_otp=$2,reset_otp_expire_at=$3 WHERE email=$4;

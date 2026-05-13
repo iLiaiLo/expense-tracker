@@ -1,0 +1,1 @@
+UPDATE expense_tracker.users SET recovery_otp='', recovery_otp_expire_at=0, is_deleted=FALSE, is_account_verified=true, deleted_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE email=$1;

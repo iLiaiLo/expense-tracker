@@ -8,6 +8,8 @@ A comprehensive backend application for managing personal expenses with user aut
   - User registration and login
   - Email verification with OTP
   - Password reset functionality
+  - Delete account functionality
+  - Account recovery functionality
   - JWT token-based authentication
   - Secure session management
 
@@ -27,6 +29,7 @@ A comprehensive backend application for managing personal expenses with user aut
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - Node.js (v22.0 or higher)
 - npm or yarn
 - A relational database (PostgreSQL)
@@ -35,18 +38,21 @@ Before you begin, ensure you have the following installed:
 ## Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
-   cd expense-tracker/server
+   cd expense-tracker
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
    Create a `.env` file in the root directory and configure:
+
    ```
     PORT=your_server_port
     USER=your_database_username
@@ -67,59 +73,40 @@ Before you begin, ensure you have the following installed:
 
 5. **Start the server**
    ```bash
-   npm start
+   npm run dev - for development
    ```
-
-## Project Structure
-
-```
-server/
-├── index.js                           # Main application entry point
-├── package.json                       # Project dependencies
-├── controllers/                       # Request handlers
-│   ├── expense.controllers/           # Expense-related handlers
-│   │   ├── deleteRequestControllers/
-│   │   ├── getRequestControllers/
-│   │   ├── postRequestControllers/
-│   │   └── putRequestControllers/
-│   └── user.auth.controllers/         # User authentication handlers
-├── db/
-│   └── connection.js                  # Database connection setup
-├── errorHandlers/
-│   └── error.handler.js               # Centralized error handling
-├── middlewares/                       # Express middleware
-│   ├── login/                         # Login validation & token generation
-│   ├── logout/                        # Logout handling
-│   ├── reset.otp/                     # Password reset OTP
-│   ├── reset.password/                # Password reset logic
-│   ├── signup/                        # Registration validation & email
-│   ├── validation/                    # Input validation
-│   ├── verify.email/                  # Email verification
-│   ├── verify.otp/                    # OTP verification
-│   └── verify.token/                  # JWT token verification
-├── queries/                           # SQL query files
-│   ├── expense_queries/               # Expense-related queries
-│   ├── schemas/                       # Database schemas
-│   └── user_queries/                  # User-related queries
-├── routes/                            # API route definitions
-│   ├── authRoutes/                    # Authentication routes
-│   └── expenseRoutes/                 # Expense management routes
-└── utils/                             # Utility functions
-    ├── getQuery.js                    # SQL query loader
-    └── nodemailer.js                  # Email service setup
-```
 
 ## API Endpoints
 
 ### Authentication Routes
 
-- **POST** `/auth/signup` - Register a new user
-- **POST** `/auth/login` - User login
-- **POST** `/auth/logout` - User logout
-- **POST** `/auth/verify-email` - Verify email with OTP
-- **POST** `/auth/send-reset-otp` - Request password reset
-- **POST** `/auth/verify-otp` - Verify OTP for password reset
-- **POST** `/auth/reset-password` - Reset password
+- **POST** `api/user/auth/signup` - Register a new user
+- **POST** `api/user/auth/login` - User login
+- **POST** `api/user/auth/logout` - User logout
+- **POST** `api/user/auth/refresh`- Refresh token
+- **POST** `api/user/auth/send-verify-otp`- Send OTP
+- **POST** `api/user/auth/verify-email` - Verify email with OTP
+
+### Update password routes
+
+- **POST** `api/user/password/send-reset-otp`- Send reset otp to email for updating password
+- **POST** `api/user/password/update-password`- Update password using OTP
+
+### Recover account routes
+
+- **POST** `api/user/account/recovery/send-recovery-otp` - Send otp to user for recovering account
+- **POST** `api/user/account/recovery/` - Recover account using recovery otp
+
+### Delete account routes
+
+- **DELETE** `api/user/account/delete/soft-delete` - soft delete of account
+
+### User data routes
+
+- **GET** `api/user/data`- Get user email username and verification status for UI
+- **POST** `api/user/data/is-auth/` -send user authenticated status
+
+###
 
 ### Expense Routes
 
@@ -133,43 +120,72 @@ server/
 ## Middleware Overview
 
 ### Authentication Middleware
+
 - `verifyToken.js` - Validates JWT tokens on protected routes
 
 ### Signup Middleware
+
 - Validates signup form fields
 - Checks for duplicate email/username
 - Generates JWT token after successful registration
 - Sends verification email
 
 ### Login Middleware
+
 - Validates login credentials
 - Verifies user password
 - Generates JWT token after successful login
 
 ### Email Verification Middleware
+
 - Sends OTP to user email
 - Verifies OTP authenticity
 - Updates user account verification status
 
 ### Password Reset Middleware
+
 - Sends reset OTP to registered email
 - Validates reset OTP
 - Updates user password securely
 
+### Delete Account Middleware
+
+- performs soft delete of user account
+
+### Recover Deleted Account Middleware
+
+- Sends recovery OTP to deleted user's email
+- Recover deleted account according to recovery OTP
+
 ## Database Schema
 
 ### Users Table
+
 - id uuid PRIMARY KEY NOT NULL,
-- username VARCHAR(255) NOT NULL,
+- username VARCHAR(255) UNIQUE NOT NULL,
 - email VARCHAR(255) UNIQUE NOT NULL,
 - password VARCHAR(255) NOT NULL,
-- verify_otp VARCHAR DEFAULT '',
-- verify_otp_expire_at BIGINT DEFAULT 0,
-- is_account_verified BOOLEAN DEFAULT FALSE,
-- reset_otp VARCHAR DEFAULT '',
-- reset_otp_expire_at BIGINT DEFAULT 0
+- verify_otp VARCHAR(6) DEFAULT '' NOT NULL,
+- verify_otp_expire_at BIGINT DEFAULT 0 NOT NULL,
+- is_account_verified BOOLEAN DEFAULT FALSE NOT NULL,
+- reset_otp VARCHAR(6) DEFAULT '' NOT NULL,
+- reset_otp_expire_at BIGINT DEFAULT 0 NOT NULL,
+- is_deleted BOOLEAN DEFAULT FALSE NOT NULL,
+- recovery_otp VARCHAR(6) DEFAULT '' NOT NULL,
+- recovery_otp_expire_at BIGINT DEFAULT 0 NOT NULL,
+- created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+- updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+- deleted_at TIMESTAMPTZ DEFAULT NULL,
+
+- CONSTRAINT valid_username CHECK (username ~ '^(?=.+[A-Za-z]).{3,}$'),
+- CONSTRAINT valid*email CHECK (email ~ '^[a-zA-Z0-9.*%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
+- CONSTRAINT valid_password CHECK (LENGTH(TRIM(password))>=6),
+- CONSTRAINT otp_only_numbers CHECK (verify_otp ~ '^[0-9]{6}$' OR verify_otp=''),
+- CONSTRAINT reset_otp_only_numbers CHECK (reset_otp ~ '^[0-9]{6}$' OR reset_otp=''),
+- CONSTRAINT recovery_otp_only_numbers CHECK (recovery_otp ~ '^[0-9]{6}$' OR recovery_otp='')
 
 ### Expenses Table
+
 - id uuid PRIMARY KEY NOT NULL,
 - user_id uuid NOT NULL,
 - category VARCHAR(50) NOT NULL,
@@ -179,13 +195,14 @@ server/
 - currency expense_tracker.currency_type DEFAULT '$',
 - created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 - CONSTRAINT fk_user
-    FOREIGN KEY(user_id)
-    REFERENCES expense_tracker.users(id)
-    ON DELETE CASCADE
+  FOREIGN KEY(user_id)
+  REFERENCES expense_tracker.users(id)
+  ON DELETE CASCADE
 
 ## Error Handling
 
-The application includes centralized error handling via `error.handler.js` that manages:
+The application includes centralized error handling via `errorHandler.js` that manages:
+
 - Validation errors
 - Authentication errors
 - Database errors
@@ -193,18 +210,23 @@ The application includes centralized error handling via `error.handler.js` that 
 
 All errors are returned in a consistent JSON format with appropriate HTTP status codes.
 
+errorHandler middleware receives error as its argument which represents AppError instance.
+AppError class is created in appError.js file
 
 ## Configuration
 
 ### Email Service (Nodemailer)
+
 The application uses Nodemailer for sending verification and reset emails. Configure your email credentials in the `.env` file.
 
 ### JWT Secret
-Ensure you set a strong `JWT_SECRET` in your environment variables for token generation and verification.
+
+Ensure you set a strong `JWT_ACCESS_KEY` and `JWT_REFRESH_KEY` in your environment variables for token generation and verification.
 
 ## Development
 
 ### Dependencies
+
 - Express.js - Web framework
 - jsonwebtoken - JWT authentication
 - bcrypt - Password hashing
@@ -212,27 +234,6 @@ Ensure you set a strong `JWT_SECRET` in your environment variables for token gen
 - pg- Database drivers
 - dotenv - Environment variable management
 
-
-## Contributing
-
-1. Create a new branch for your feature
-2. Make your changes
-3. Test thoroughly
-4. Commit with clear messages
-5. Push to the repository
-6. Submit a pull request
-
-## Security Best Practices
-
-- Always use HTTPS in production
-- Keep JWT secret secure
-- Validate and sanitize all user inputs
-- Use environment variables for sensitive data
-- Implement rate limiting on authentication endpoints
-- Regularly update dependencies
-
 ## Support
 
 For issues or questions, please open an issue in the repository or contact me.
-
-

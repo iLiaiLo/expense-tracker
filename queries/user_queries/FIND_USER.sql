@@ -1,1 +1,0 @@
-SELECT * FROM expense_tracker.users WHERE username=$1;

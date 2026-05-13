@@ -1,9 +1,14 @@
 import express from "express";
 
-import { getUserData } from "../../controllers/user.auth.controllers/user.controller.js";
-import { verifyToken } from "../../middlewares/verify.token/verifyToken.js";
+import verifyToken from "../../middlewares/verifyToken/verifyToken.js";
+
+import getVerifiedUserData from "../../controllers/userAuthControllers/userInfo/getVerifiedUserData.js";
+
+import userAuthenticatedStatus from "../../controllers/userAuthControllers/userInfo/userAuthenticatedStatus.js";
 const userRouter = express.Router();
 
-userRouter.get("/", verifyToken, getUserData);
+userRouter.get("/", verifyToken, getVerifiedUserData);
+
+userRouter.post("/is-auth", verifyToken, userAuthenticatedStatus);
 
 export default userRouter;

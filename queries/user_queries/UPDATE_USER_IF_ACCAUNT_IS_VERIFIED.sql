@@ -1,1 +1,1 @@
-UPDATE expense_tracker.users SET is_account_verified=$1,verify_otp=$2,verify_otp_expire_at=$3 WHERE id=$4;
+UPDATE expense_tracker.users SET is_account_verified=true, verify_otp='', verify_otp_expire_at=0, updated_at=CURRENT_TIMESTAMP WHERE id=$1;

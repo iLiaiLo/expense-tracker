@@ -17,7 +17,7 @@ const connectToDb = async () => {
   try {
     const createSchema = getQuery("schemas/CREATE_EXPENSE_TRACKER_SCHEMA.sql");
     const createExpensesTable = getQuery(
-      "expense_queries/CREATE_EXPENSES_TABLE.sql"
+      "expense_queries/CREATE_EXPENSES_TABLE.sql",
     );
     const createUsersTable = getQuery("user_queries/CREATE_USERS_TABLE.sql");
 
@@ -32,6 +32,7 @@ const connectToDb = async () => {
   } catch (error) {
     await client.query("ROLLBACK");
     console.log("error during database connection " + error.message);
+    throw error;
   } finally {
     client.release();
   }

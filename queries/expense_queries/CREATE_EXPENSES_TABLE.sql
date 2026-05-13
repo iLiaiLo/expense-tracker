@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS expense_tracker.expenses
     color VARCHAR(7) NOT NULL,
     currency expense_tracker.currency_type DEFAULT '$',
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user
         FOREIGN KEY(user_id)
         REFERENCES expense_tracker.users(id)

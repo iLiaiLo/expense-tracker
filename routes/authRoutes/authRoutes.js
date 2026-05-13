@@ -1,87 +1,65 @@
 import express from "express";
 
-import { checkSignupFields } from "../../middlewares/signup/check.signup.fields.js";
-import { checkUserByUserName } from "../../middlewares/signup/check.user.by.username.js";
-import { checkUserByEmail } from "../../middlewares/signup/check.user.by.email.js";
-import { validateUsername } from "../../middlewares/validation/validate.username.js";
-import { validateEmail } from "../../middlewares/validation/validate.email.js";
-import { validatePassword } from "../../middlewares/validation/validate.password.js";
-import { generateTokenAfterSignup } from "../../middlewares/signup/generate.token.after.signup.js";
-import { checkLoginFields } from "../../middlewares/login/check.login.fields.js";
-import { checkUser } from "../../middlewares/login/check.user.js";
-import { checkUserPassword } from "../../middlewares/login/check.user.password.js";
-import { generateTokenAfterLogin } from "../../middlewares/login/generate.token.after.login.js";
-import { sendEmail } from "../../middlewares/signup/send.email.js";
-import { verifyToken } from "../../middlewares/verify.token/verifyToken.js";
-import { ifUserIsAuthenticated } from "../../controllers/user.auth.controllers/if.user.is.authenticated.js";
-import { checkEmailOtpNewPasswordfields } from "../../middlewares/reset.password/check.email.otp.newPassword.fields.js";
-import { validateOtp } from "../../middlewares/validation/validate.otp.js";
-import { checkUserOtp } from "../../middlewares/reset.password/check.user.otp.js";
-import { updatePassword } from "../../middlewares/reset.password/update.password.js";
-import { logout } from "../../middlewares/logout/logout.js";
-import { checkIfAccauntIsVerified } from "../../middlewares/verify.otp/check.if.accaunt.is.verified.js";
-import { storeVerifyOtp } from "../../middlewares/verify.otp/store.verify.otp.js";
-import { sendVerifyOtp } from "../../middlewares/verify.otp/send.verify.otp.js";
+import validateSignupInput from "../../middlewares/signup/validateSignupInput.js";
+import checkUserBeforeSignup from "../../middlewares/signup/checkUserBeforeSignup.js";
+import signup from "../../controllers/userAuthControllers/authentication/signup.js";
+import sendRegistrationStatus from "../../services/sendRegistrationStatus.js";
 
-import { verifyUserByEmail } from "../../middlewares/reset.otp/verify.user.by.email.js";
-import { storeResetOtp } from "../../middlewares/reset.otp/store.reset.otp.js";
-import { sendResetOtp } from "../../middlewares/reset.otp/send.reset.otp.js";
-import { checkOtpField } from "../../middlewares/verify.email/check.otp.field.js";
-import { checkUserOtpExpirationStatus } from "../../middlewares/verify.email/check.user.otp.expiration.status.js";
-import { updateUserAccountVerificationStatus } from "../../middlewares/verify.email/update.user.account.verification.status.js";
+import checkLoginFields from "../../middlewares/login/checkLoginFields.js";
+import checkUserBeforeLogin from "../../middlewares/login/checkUserBeforeLogin.js";
+import checkUserPassword from "../../middlewares/login/checkUserPassword.js";
+import login from "../../controllers/userAuthControllers/authentication/login.js";
 
+import logout from "../../controllers/userAuthControllers/authentication/logout.js";
+
+import refreshToken from "../../controllers/userAuthControllers/authentication/refresh.js";
+
+import verifyToken from "../../middlewares/verifyToken/verifyToken.js";
+
+import accountIsVerified from "../../middlewares/vreifyOtp/accountIsVerified.js";
+import storeVerifyOtp from "../../controllers/userAuthControllers/updateUserPassword/storeVerifyOtp.js";
+import sendVerifyOtp from "../../services/sendVerifyOtp.js";
+
+import checkUserOtpExpirationStatus from "../../middlewares/verifyEmail/checkUserOtpExpirationStatus.js";
+import updateUserAccountVerificationStatus from "../../controllers/userAuthControllers/updateUserPassword/updateUserAccountVerificationStatus.js";
+import sendUserVerificationStatus from "../../services/sendUserVerificationStatus.js";
 const outhRouter = express.Router();
 
 outhRouter.post(
   "/signup",
-  checkSignupFields,
-  checkUserByUserName,
-  checkUserByEmail,
-  validateUsername,
-  validateEmail,
-  validatePassword,
-  sendEmail,
-  generateTokenAfterSignup,
+  validateSignupInput,
+  checkUserBeforeSignup,
+  signup,
+  sendRegistrationStatus,
 );
+
 outhRouter.post(
   "/login",
   checkLoginFields,
-  checkUser,
+  checkUserBeforeLogin,
   checkUserPassword,
-  generateTokenAfterLogin,
+  login,
 );
 
 outhRouter.post("/logout", logout);
 
+outhRouter.post("/refresh", refreshToken);
+
 outhRouter.post(
   "/send-verify-otp",
   verifyToken,
-  checkIfAccauntIsVerified,
+  accountIsVerified,
   storeVerifyOtp,
   sendVerifyOtp,
 );
+
 outhRouter.post(
   "/verify-email",
   verifyToken,
-  checkOtpField,
+  accountIsVerified,
   checkUserOtpExpirationStatus,
   updateUserAccountVerificationStatus,
-);
-outhRouter.post("/is-auth", verifyToken, ifUserIsAuthenticated);
-outhRouter.post(
-  "/send-reset-otp",
-  verifyUserByEmail,
-  storeResetOtp,
-  sendResetOtp,
-);
-outhRouter.post(
-  "/reset-password",
-  checkEmailOtpNewPasswordfields,
-  validateEmail,
-  validateOtp,
-  validatePassword,
-  checkUserOtp,
-  updatePassword,
+  sendUserVerificationStatus,
 );
 
 export default outhRouter;

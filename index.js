@@ -36,9 +36,9 @@ app.use("/api/expenses", expenseRouter);
 
 app.use(errorHandler);
 
-connectToDb();
-startCleanupService()
+connectToDb()
   .then(() => {
+    startCleanupService();
     app.listen(PORT, () => console.log(`server running on port ${PORT}`));
   })
   .catch((e) => {

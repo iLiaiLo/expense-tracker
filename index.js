@@ -15,6 +15,7 @@ import recoveryAccountRouter from "./routes/authRoutes/recoveryAccountRotues.js"
 import expenseRouter from "./routes/expenseRoutes/expenseRoutes.js";
 
 import errorHandler from "./errorHandlers/errorhandler.js";
+import startCleanupService from "./cron/startCleanupService.js";
 
 dotenv.config();
 
@@ -35,7 +36,8 @@ app.use("/api/expenses", expenseRouter);
 
 app.use(errorHandler);
 
-connectToDb()
+connectToDb();
+startCleanupService()
   .then(() => {
     app.listen(PORT, () => console.log(`server running on port ${PORT}`));
   })

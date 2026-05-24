@@ -60,7 +60,8 @@ Before you begin, ensure you have the following installed:
     DATABASE=your_database_name
     PASSWORD=your_db_password
     DB_PORT=your_db_port
-    JWT_SECRET_KEY=your_secret_key
+    JWT_ACCESS_KEY=your_access_key
+    JWT_REFRESH_KEY=your_refresh_key
 
     SENDER_EMAIL=sender_email@gmail.com
     SENDER_PASSWORD=google_verification_16characters_key

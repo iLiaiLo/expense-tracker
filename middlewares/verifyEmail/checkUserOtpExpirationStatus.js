@@ -1,5 +1,5 @@
 import { pool } from "../../db/connectoin.js";
-import getQuery from "../../utils/getQuery.js";
+import { findUserByIdQuery } from "../../queries/user_queries/FIND_USER_BY_ID.js";
 import AppError from "../../errorHandlers/appError.js";
 const checkUserOtpExpirationStatus = async (req, res, next) => {
   try {
@@ -11,9 +11,8 @@ const checkUserOtpExpirationStatus = async (req, res, next) => {
     }
 
     const userId = req.user.id;
-    const findUserById = getQuery("user_queries/FIND_USER_BY_ID.sql");
 
-    const user = await pool.query(findUserById, [userId]);
+    const user = await pool.query(findUserByIdQuery, [userId]);
     if (!user) {
       const error = new AppError(
         "user not found during email verification",

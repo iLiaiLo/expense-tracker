@@ -1,6 +1,7 @@
 import { pool } from "../../db/connectoin.js";
-import getQuery from "../../utils/getQuery.js";
 import AppError from "../../errorHandlers/appError.js";
+
+import { findUserByEmailQuery } from "../../queries/user_queries/FIND_USER_BY_EMAIL.js";
 const checkDeletedAccount = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -9,10 +10,7 @@ const checkDeletedAccount = async (req, res, next) => {
       const error = new AppError("please provide email", 400);
       return next(error);
     }
-
-    const findUserQuery = getQuery("user_queries/FIND_USER_BY_EMAIL.sql");
-
-    const user = await pool.query(findUserQuery, [email]);
+    const user = await pool.query(findUserByEmailQuery, [email]);
     if (!user.rowCount) {
       const error = new AppError("user not found", 404);
       return next(error);

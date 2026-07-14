@@ -1,5 +1,5 @@
 import { pool } from "../../db/connectoin.js";
-import getQuery from "../../utils/getQuery.js";
+import { findUserByEmailQuery } from "../../queries/user_queries/FIND_USER_BY_EMAIL.js";
 import AppError from "../../errorHandlers/appError.js";
 const verifyUserByEmail = async (req, res, next) => {
   try {
@@ -8,8 +8,7 @@ const verifyUserByEmail = async (req, res, next) => {
       const error = new AppError("please provide email", 400);
       return next(error);
     }
-    const findUserByEmail = getQuery("user_queries/FIND_USER_BY_EMAIL.sql");
-    const user = await pool.query(findUserByEmail, [email]);
+    const user = await pool.query(findUserByEmailQuery, [email]);
     if (!user.rowCount) {
       const error = new AppError("user not found", 404);
       return next(error);

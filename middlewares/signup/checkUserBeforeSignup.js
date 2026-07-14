@@ -1,11 +1,10 @@
 import { pool } from "../../db/connectoin.js";
 import AppError from "../../errorHandlers/appError.js";
-import getQuery from "../../utils/getQuery.js";
+import { findUserByEmailQuery } from "../../queries/user_queries/FIND_USER_BY_EMAIL.js";
 const checkUserBeforeSignup = async (req, res, next) => {
   try {
     const email = res.locals.email;
-    const userStatusQuery = getQuery("user_queries/FIND_USER_BY_EMAIL.sql");
-    const { rows, rowCount } = await pool.query(userStatusQuery, [email]);
+    const { rows, rowCount } = await pool.query(findUserByEmailQuery, [email]);
 
     const user = rows[0];
 

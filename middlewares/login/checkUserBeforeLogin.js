@@ -1,12 +1,13 @@
 import { pool } from "../../db/connectoin.js";
-import getQuery from "../../utils/getQuery.js";
 import AppError from "../../errorHandlers/appError.js";
+import { findUserByUsernameQuery } from "../../queries/user_queries/FIND_USER_BY_USERNAME.js";
 const checkUserBeforeLogin = async (req, res, next) => {
   try {
     const username = res.locals.username;
 
-    const checkUserQuery = getQuery("user_queries/FIND_USER_BY_USERNAME.sql");
-    const { rowCount, rows } = await pool.query(checkUserQuery, [username]);
+    const { rowCount, rows } = await pool.query(findUserByUsernameQuery, [
+      username,
+    ]);
     const { id, is_deleted, password, is_account_verified } = rows[0];
     if (!rowCount) {
       const error = new AppError(

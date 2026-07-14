@@ -1,12 +1,11 @@
-import getQuery from "../../utils/getQuery.js";
 import { pool } from "../../db/connectoin.js";
 import AppError from "../../errorHandlers/appError.js";
+import { findUserByEmailQuery } from "../../queries/user_queries/FIND_USER_BY_EMAIL.js";
 const checkRecoveryOtp = async (req, res, next) => {
   try {
     const email = res.locals.email;
     const otp = res.locals.recoveryOTP;
-    const findUserByemail = getQuery("user_queries/FIND_USER_BY_EMAIL.sql");
-    const user = await pool.query(findUserByemail, [email]);
+    const user = await pool.query(findUserByEmailQuery, [email]);
     if (!user.rowCount) {
       const error = new AppError(`user with email ${email} was not found`, 404);
       return next(error);

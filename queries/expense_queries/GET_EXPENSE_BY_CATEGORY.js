@@ -1,0 +1,1 @@
+export const getExpensesBycategoryQuery = `SELECT * FROM expense_tracker.expenses WHERE user_id=$1 AND category=$2;`;

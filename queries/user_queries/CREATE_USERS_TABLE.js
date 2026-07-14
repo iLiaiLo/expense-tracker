@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS expense_tracker.users(
+export const createUsersTableQuery = `CREATE TABLE IF NOT EXISTS expense_tracker.users(
     id uuid PRIMARY KEY NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -21,5 +21,4 @@ CREATE TABLE IF NOT EXISTS expense_tracker.users(
     CONSTRAINT otp_only_numbers CHECK (verify_otp ~ '^[0-9]{6}$' OR verify_otp=''),
     CONSTRAINT reset_otp_only_numbers CHECK (reset_otp ~ '^[0-9]{6}$' OR reset_otp=''),
     CONSTRAINT recovery_otp_only_numbers CHECK (recovery_otp ~ '^[0-9]{6}$' OR recovery_otp='')
-);
-
+);`;

@@ -1,4 +1,4 @@
-DO $$
+export const createExpensesTableQuery = `DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -26,4 +26,4 @@ CREATE TABLE IF NOT EXISTS expense_tracker.expenses
         FOREIGN KEY(user_id)
         REFERENCES expense_tracker.users(id)
         ON DELETE CASCADE
-);
+);`;

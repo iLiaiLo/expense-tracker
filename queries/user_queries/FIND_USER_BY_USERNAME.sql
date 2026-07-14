@@ -1,1 +1,0 @@
-SELECT id,password,is_deleted,is_account_verified FROM expense_tracker.users WHERE username = $1;

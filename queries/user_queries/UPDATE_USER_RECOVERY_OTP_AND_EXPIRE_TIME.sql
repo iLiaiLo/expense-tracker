@@ -1,1 +1,0 @@
-UPDATE expense_tracker.users SET recovery_otp=$1, recovery_otp_expire_at=$2 WHERE email=$3;

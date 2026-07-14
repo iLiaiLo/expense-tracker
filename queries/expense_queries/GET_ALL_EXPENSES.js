@@ -1,0 +1,1 @@
+export const getAllExpensesQuery = `SELECT * FROM expense_tracker.expenses WHERE user_id=$1 ORDER BY created_at DESC;`;

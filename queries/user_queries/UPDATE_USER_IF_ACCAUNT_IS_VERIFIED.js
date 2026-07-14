@@ -1,0 +1,1 @@
+export const updateAccountVerificationQuery = `UPDATE expense_tracker.users SET is_account_verified=true, verify_otp='', verify_otp_expire_at=0, updated_at=CURRENT_TIMESTAMP WHERE id=$1;`;

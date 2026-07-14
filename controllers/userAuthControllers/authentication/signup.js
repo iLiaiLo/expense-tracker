@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
-import getQuery from "../../../utils/getQuery.js";
 import { pool } from "../../../db/connectoin.js";
 import jwt from "jsonwebtoken";
+import { addUserQuery } from "../../../queries/user_queries/ADD_USER.js";
 
 const signup = async (req, res, next) => {
   try {
@@ -10,11 +10,9 @@ const signup = async (req, res, next) => {
     const password = res.locals.password;
     const email = res.locals.email;
 
-    const addUser = getQuery("user_queries/ADD_USER.sql");
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await pool.query(addUser, [id, username, email, hashedPassword]);
+    await pool.query(addUserQuery, [id, username, email, hashedPassword]);
 
     const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH_KEY, {
       expiresIn: "1d",

@@ -1,14 +1,12 @@
 import { pool } from "../../../db/connectoin.js";
 import AppError from "../../../errorHandlers/appError.js";
-import getQuery from "../../../utils/getQuery.js";
-
+import { updateExpenseQuery } from "../../../queries/expense_queries/UPDATE_EXPENSE.js";
 const updateExpense = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { category, description, amount, color, currency } = req.body;
-    const updateExpense = getQuery("expense_queries/UPDATE_EXPENSE.sql");
 
-    const result = await pool.query(updateExpense, [
+    const result = await pool.query(updateExpenseQuery, [
       id,
       req.user.id,
       category,

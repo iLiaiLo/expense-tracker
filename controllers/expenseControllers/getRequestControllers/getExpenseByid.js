@@ -1,14 +1,10 @@
-import getQuery from "../../../utils/getQuery.js";
 import { pool } from "../../../db/connectoin.js";
-
+import { getExpenseByIdQuery } from "../../../queries/expense_queries/GET_EXPENSE_BY_ID.js";
 const getExpenseById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const getExpensesByCategory = getQuery(
-      "expense_queries/GET_EXPENSE_BY_ID.sql",
-    );
-    const result = await pool.query(getExpensesByCategory, [id, req.user.id]);
+    const result = await pool.query(getExpenseByIdQuery, [id, req.user.id]);
     if (!result.rowCount) {
       return res
         .status(404)

@@ -1,12 +1,10 @@
-import getQuery from "../../../utils/getQuery.js";
 import { pool } from "../../../db/connectoin.js";
 import AppError from "../../../errorHandlers/appError.js";
-
+import { softDeleteQuery } from "../../../queries/user_queries/SOFT_DELETE.js";
 const softDelete = async (req, res, next) => {
   try {
     const id = req.user.id;
-    const deleteAccountQuery = getQuery("user_queries/SOFT_DELETE.sql");
-    const deleteAccount = await pool.query(deleteAccountQuery, [id]);
+    const deleteAccount = await pool.query(softDelete, [id]);
     if (!deleteAccount.rowCount) {
       const error = new AppError("unable to perform soft delete", 404);
       return next(error);

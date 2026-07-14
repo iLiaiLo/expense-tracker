@@ -1,13 +1,10 @@
-import getQuery from "../../../utils/getQuery.js";
 import { pool } from "../../../db/connectoin.js";
+import { updateVerificationQuery } from "../../../queries/user_queries/UPDATE_USER_VERIFICATION_STATUS.js";
 
 const recoverDeletedAccount = async (req, res, next) => {
   try {
     const email = res.locals.email;
-    const updateVerifactionQuery = getQuery(
-      "user_queries/UPDATE_USER_VERIFICATION_STATUS.sql",
-    );
-    const updateVerifactionStatus = await pool.query(updateVerifactionQuery, [
+    const updateVerifactionStatus = await pool.query(updateVerificationQuery, [
       email,
     ]);
 

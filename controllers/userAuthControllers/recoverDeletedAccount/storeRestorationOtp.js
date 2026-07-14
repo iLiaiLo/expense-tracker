@@ -1,6 +1,5 @@
-import getQuery from "../../../utils/getQuery.js";
 import { pool } from "../../../db/connectoin.js";
-
+import { updateRecoveryOtpAndExpiryQuery } from "../../../queries/user_queries/UPDATE_USER_RECOVERY_OTP_AND_EXPIRE_TIME.js";
 const storeRecoveryOtp = async (req, res, next) => {
   try {
     const email = res.locals.email;
@@ -9,11 +8,7 @@ const storeRecoveryOtp = async (req, res, next) => {
     ).toString();
     const recoveryOTPExpireAt = Date.now() + 15 * 60 * 1000;
 
-    const updateExpirationData = getQuery(
-      "user_queries/UPDATE_USER_RECOVERY_OTP_AND_EXPIRE_TIME.sql",
-    );
-
-    await pool.query(updateExpirationData, [
+    await pool.query(updateRecoveryOtpAndExpiryQuery, [
       recoveryOTP,
       recoveryOTPExpireAt,
       email,

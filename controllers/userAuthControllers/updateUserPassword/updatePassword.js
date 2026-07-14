@@ -1,6 +1,5 @@
-import getQuery from "../../../utils/getQuery.js";
 import { pool } from "../../../db/connectoin.js";
-
+import { updatePasswordQuery } from "../../../queries/user_queries/UPDATE_USER_PASSWORD.js";
 import bcrypt from "bcrypt";
 
 const updatePassword = async (req, res, next) => {
@@ -10,11 +9,7 @@ const updatePassword = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const resetPasswordQuery = getQuery(
-      "user_queries/UPDATE_USER_PASSWORD.sql",
-    );
-
-    await pool.query(resetPasswordQuery, [hashedPassword, email]);
+    await pool.query(updatePasswordQuery, [hashedPassword, email]);
 
     const options = {
       httpOnly: true,
